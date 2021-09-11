@@ -17,9 +17,12 @@ let destinationGPS = ''
 
 app.post('/distance', (req, res) => {
     console.log(req.body);
-    origin = req.body.distance.origin
-    destination = req.body.distance.destination
+    origin = req.body.distance.origin;
+    destination = req.body.distance.destination;
+    //bing maps API key
     const key = "AuLjO1RyuIi_OgwzYuV_0mSAYHRV5_JDYzHnCy9V0CAAEWOzmII-Q__ZzTCQnoIP";
+
+    //bing free coordinates API
     const url1 = `http://dev.virtualearth.net/REST/v1/Locations?q=${origin}&&key=${key}`
     const url2 = `http://dev.virtualearth.net/REST/v1/Locations?q=${destination}&&key=${key}`
     fetch(url1)
@@ -32,21 +35,17 @@ app.post('/distance', (req, res) => {
                 .then(After => {
                     destinationGPS = After.resourceSets[0].resources[0].geocodePoints[0].coordinates;
                     console.log(destinationGPS);
+                    // bing free distance matrix API
                     const url = `https://dev.virtualearth.net/REST/v1/Routes/DistanceMatrix?origins=${originGPS}&destinations=${destinationGPS}&travelMode=driving&key=${key}`
                     fetch(url)
                         .then(resp => resp.json())
                         .then(resAfter => {
-                            console.log(originGPS);
-
-                            console.log(resAfter.resourceSets[0].resources[0].results[0].travelDistance);
                             distance = resAfter.resourceSets[0].resources[0].results[0].travelDistance;
                             res.send({distance});
-
-
                         }).catch(error => {
                             res.send(-1);
                         });
-
+                        
                 }).catch(error => {
                     res.sendStatus(404);
                 });

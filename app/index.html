@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Find Distance</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            background-color: black;
+            color: white;
+            width: 400px;
+            margin: auto;
+            float: center;
+            padding: 20px 20px 80px 75px;
+            font-size: 20px;
+            border-radius: 5px;
+        }
+
+        .button {
+            margin-top: 50px;
+            padding: 10px;
+            height: 40px;
+            text-align: center;
+            transition: 0.5s;
+            background-size: 200% auto;
+            color: white;
+            box-shadow: 0 0 20px #eee;
+            border-radius: 10px;
+            background-image: linear-gradient(to right, #000000 0%, #888888 52%, #000000 100%);
+        }
+
+        .button:hover {
+            background-position: right center;
+        }
+
+        input {
+            background-color: black;
+            color: white;
+            box-shadow: 0 0 10px #eee;
+            height: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <form onsubmit="distance(event)" class="container">
+            <div>
+                <h1>Distance Calculator</h1>
+                <p> Enter Origin</p>
+                <input name='origin' type="text" placeholder="Origin" />
+                <p> Enter Destination</p>
+                <input name='destination' type="text" placeholder="Destination" />
+                <br />
+                <input type="submit" value="CALCULATE" class="button">
+                <br /><br />
+                <div style="display: inline-block;">Distance - </div>
+                <div id="distance" style="display: inline-block;"></div>
+            </div>
+        </form>
+    </div>
+</body>
+<script>
+    function distance(e) {
+        e.preventDefault();
+        if (!e.target.origin.value || !e.target.destination.value) {
+            alert("Enter city name");
+        }
+        else {
+            let distance = { origin: e.target.origin.value, destination: e.target.destination.value }
+            console.log(distance);
+
+            //backend hosted on heroku
+            fetch('https://distance-calculator-api.herokuapp.com/distance', {
+                method: 'POST',
+                body: JSON.stringify({ distance }),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+                .then(json => {
+                    //if no path
+                    if (json.distance == -1)
+                        document.getElementById('distance').innerHTML = "Two destinations can't be travelled by road";
+                    else
+                        document.getElementById('distance').innerHTML = ` ${json.distance} km`;
+                }).catch(error => {
+                    alert("Cannot find the city");
+                });
+        }
+    }
+
+</script>
+
+</html>
